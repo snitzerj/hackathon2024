@@ -1,5 +1,6 @@
 import re
 from functools import lru_cache
+from OpenAIClient import OpenAIClient
 class CleanFile:
     
     def __init__(self, filepath):
@@ -15,7 +16,8 @@ class CleanFile:
 
     @lru_cache(maxsize=None)
     def get_vector_embedding(self):
-         pass
+        openai = OpenAIClient()
+        return openai.get_embedding(self.file_contents)
 
 
 
