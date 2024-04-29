@@ -47,7 +47,7 @@ def query_rag(query_text: str):
     messages=[{'role': 'user', 'content': prompt}],)
 
     # sources = [doc.metadata.get("id", None) for doc, _score in results]
-    formatted_response = f"Response: {response}"
+    formatted_response = f"Response: {response.choices[0].message.content}"
     print(formatted_response)
     return response
 
