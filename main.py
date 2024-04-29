@@ -17,9 +17,6 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 data_folder_path = os.path.join(script_dir, r'data\full_contract_txt')
 # Loop through all files in the folder
 
-bad_encoding_count = 0
-whitespace_chars_saved = 0
-pattern = r'\s+'
 for filename in os.listdir(data_folder_path):
     # Check if the current file is a regular file
     if os.path.isfile(os.path.join(data_folder_path, filename)):
