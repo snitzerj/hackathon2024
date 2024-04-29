@@ -1,4 +1,5 @@
 import re
+from functools import lru_cache
 class CleanFile:
     
     def __init__(self, filepath):
@@ -11,6 +12,10 @@ class CleanFile:
                     self.file_contents = re.sub(pattern, ' ', file_contents)
         except UnicodeDecodeError:
             self.file_contents = ''
+
+    @lru_cache(maxsize=None)
+    def get_vector_embedding(self):
+         pass
 
 
 
