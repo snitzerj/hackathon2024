@@ -1,0 +1,6 @@
+langchain   #LLM Library
+chromadb    # Vector Storage
+pypdf       # Loading PDFs
+pytest      # Unit Testing  
+openai      # open ai python package
+tiktoken    # needed for open ai embeddings
