@@ -25,9 +25,17 @@ def show_contract_text_callback(clean_file):
     with st.chat_message("assistant"):
         st.markdown(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
-        
 
+def show_contract_text(file):
+    # Read and store the file content in session state
+    file_content = read_file(file.filepath)
+    st.session_state['display_content'] = file_content
+    file_name = os.path.basename(file.filepath)
+    st.session_state['content_label'] = file_name
 
+def read_file(filepath):
+    with open(filepath, 'r') as file:
+        return file.read()
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -51,4 +59,10 @@ with st.sidebar:
     data_folder_path = os.path.join(script_dir, r'data\full_contract_txt')
     for clean_file in get_clean_files():
         button_name = clean_file.filepath.replace(data_folder_path + '\\', '')
-        st.button(button_name, key=button_name, on_click=show_contract_text_callback, args=[clean_file])
+        st.button(button_name, key=button_name, on_click=show_contract_text, args=[clean_file])
+
+# Main container for displaying the contract file contents
+if 'display_content' in st.session_state:
+    with st.container():
+        with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
+            st.write(st.session_state['display_content'])
