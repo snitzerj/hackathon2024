@@ -63,7 +63,7 @@ Answer the question based on the above context: {question}
         prompt = prompt_template.format(context=context_text, question=query_text)
         # print(prompt)
         sources = [doc.metadata.get("source", None) for doc, _ in results]
-        print(prompt)
+        #print(prompt)
         LLM = OpenAI( api_key=get_openai_key('C:/shared/content/config/api-keys/hackathon_openai_keys.json'))
         response = LLM.chat.completions.create(
         model='gpt-4',

@@ -26,5 +26,6 @@ if prompt := st.chat_input("Message ContractBot..."):
     result = vector_client.query(prompt)
     with st.chat_message("assistant"):
         st.markdown(result['response'])
-        st.markdown(result['sources'])
-    st.session_state.messages.append({"role": "assistant", "content": result})
+        st.markdown(set(result['sources']))
+    st.session_state.messages.append({"role": "assistant", "content": result['response']})
+    st.session_state.messages.append({"role": "assistant", "content": set(result['sources'])})
