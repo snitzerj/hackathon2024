@@ -1,3 +1,6 @@
 chroma
 __pycache__
 Contract_Data
+env/
+.env
+.vscode
