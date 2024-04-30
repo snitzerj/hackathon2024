@@ -18,7 +18,7 @@ def get_index(data, index_name):
     return index
 
 
-pdf_path = os.path.join("Contract_Data", "Supply")
+pdf_path = os.path.join("contract_pdf_vector_data")
 reader = SimpleDirectoryReader(input_dir = pdf_path)
 data = reader.load_data()
 pdf_index = get_index(data, "contract_pdf_vector_data")
