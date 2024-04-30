@@ -5,6 +5,8 @@ from langchain.vectorstores.chroma import Chroma
 from get_embeddings_function import get_embedding_function
 from langchain_community.embeddings import OpenAIEmbeddings
 import json
+from langchain.prompts import ChatPromptTemplate
+from openai import OpenAI
 
 def get_openai_key(file_path):
     try:
@@ -26,8 +28,8 @@ def get_embedding_function():
 
 class ChromaClient(object):
 
-    def __init__(self):
-        self._CHROMA_PATH = "chroma"
+    def __init__(self, chroma_path):
+        self._CHROMA_PATH = chroma_path
         self.db = Chroma(
             persist_directory=self._CHROMA_PATH, embedding_function=get_embedding_function()
         )
@@ -36,6 +38,37 @@ class ChromaClient(object):
     def add_to_chroma_db(self, chunks: list[Document]):
         self.db.add_documents(chunks)
         self.db.persist()
+
+    def get_all_embeddings(self):
+        return self.db._collection.get(include=['embeddings'])
         
+    def query(self, query_text: str):
+        PROMPT_TEMPLATE = """
+Answer the question based only on the following context:
+
+{context}
+
+---
+
+Answer the question based on the above context: {question}
+"""
+        # Prepare the DB.
+        embedding_function = get_embedding_function()
+        
+        # Search the DB.
+        results = self.db.similarity_search_with_score(query_text, k=5)
+
+        context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])[0:5000]
+        prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
+        prompt = prompt_template.format(context=context_text, question=query_text)
+        # print(prompt)
+        sources = [doc.metadata.get("source", None) for doc, _ in results]
+        print(prompt)
+        LLM = OpenAI( api_key=get_openai_key('C:/shared/content/config/api-keys/hackathon_openai_keys.json'))
+        response = LLM.chat.completions.create(
+        model='gpt-4',
+        messages=[{'role': 'user', 'content': prompt}],)
+        
+        return {'response': response.choices[0].message.content, 'sources': sources}
 
 
