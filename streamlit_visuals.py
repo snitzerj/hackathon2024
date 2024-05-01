@@ -1,45 +1,14 @@
 import streamlit as st 
-from ChromaClient import ChromaClient
 from CleanFile import CleanFile
 import os
-from ai_agent_main import agent
-import json
-import sys
-from io import StringIO
+import pandas as pd
 from streamlit_navigation_bar import st_navbar
 import base64
-import contextlib
-
-
-class CustomStdout:
-    def __init__(self, original_stdout):
-        self.original_stdout = original_stdout
-
-    def write(self, s):
-        #self.original_stdout.write(s)
-        self.call_function(s)
-
-    def call_function(self, s):
-        print(f'Function called with: {s}', file=self.original_stdout)
-        if not len(f'{s}') == 0:
-            with st.chat_message("assistant"):
-                st.write(f'{s}', file=self.original_stdout)
-
-    def flush(self):
-        pass
-
-def function_to_call():
-    print("Hello, World!")
-
-@contextlib.contextmanager
-def stdout_redirector():
-    original_stdout = sys.stdout
-    sys.stdout = CustomStdout(original_stdout)
-    try:
-        yield
-    finally:
-        sys.stdout = original_stdout
-
+#begin = st.container()
+#begin.title("Team Goldmine Presents ContractBot")
+########################################################################
+# st.markdown('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
+#Navbar
 pages = [""]
 styles = {
     "nav": {
@@ -177,44 +146,6 @@ logo_html = """
 
 ######################################################################
 
-
-
-
-
-def capture_output(func):
-    def wrapper(*args, **kwargs):
-        # Redirect sys.stdout to a StringIO object
-        original_stdout = sys.stdout
-        sys.stdout = StringIO()
-        
-        try:
-            # Call the original function
-            result = func(*args, **kwargs)
-            
-            # Get the output from StringIO and store it in a variable
-            captured_output = sys.stdout.getvalue()
-            with st.expander("AI Agent Observations"):
-                st.write(captured_output)
-            
-            # Restore sys.stdout
-            sys.stdout = original_stdout
-            
-            return result
-        except Exception as e:
-            # Restore sys.stdout even if an exception occurs
-            sys.stdout = original_stdout
-            raise e
-    
-    return wrapper
-
-#begin = st.container()
-#begin.title("Team Goldmine Presents ContractBot")
-
-@st.cache_resource
-def get_chroma_client():
-    return ChromaClient('chroma5')
-
-vector_client = get_chroma_client()
 @st.cache_data(hash_funcs={CleanFile: lambda f: f.file_contents})
 def get_clean_files():
     clean_files = []
@@ -235,23 +166,10 @@ def show_contract_text_callback(clean_file):
     with st.chat_message("assistant"):
         st.markdown(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
+        
 
-def show_contract_text(file):
-    # Read and store the file content in session state
-    file_content = read_file(file.filepath)
-    st.session_state['display_content'] = file_content
-    file_name = os.path.basename(file.filepath)
-    st.session_state['content_label'] = file_name
 
-def read_file(filepath):
-    with open(filepath, 'r') as file:
-        return file.read()
-    
-#@capture_output
-def display_agent_thoughts(prompt):
-    with stdout_redirector():
-        response = agent.query(prompt)
-        return response
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -259,49 +177,19 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Message Goldmine..."):
+if prompt := st.chat_input("Message ContractBot..."):
     st.chat_message("user").markdown(prompt)
     
     st.session_state.messages.append({"role": "user", "content": prompt})
-    result = display_agent_thoughts(prompt)
-    with st.chat_message("assistant"):
-        print(f"LLM Query final result: {result}")
-        try:
-            result = json.loads(result.response)
-        except ValueError as e:
-            result = {'response': result, 'sources': []}
-        
-        st.markdown(result['response'])
-        if isinstance(result['sources'], str):
-            source = result['sources']
-            if source is not None or not source == 'contracts_tabular_data':
-                    with st.container():
-                        with open(os.path.join(r'data\full_contract_txt', source), 'r') as file:
-                            st.session_state['display_content'] = file.read()
-                            st.session_state['content_label'] = source
-                        with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
-                            st.write(st.session_state['display_content'])
-        else:
-            for source in result['sources']:
-                if source is not None or not source == 'contracts_tabular_data':
-                    with st.container():
-                        with open(os.path.join(r'data\full_contract_txt', source), 'r') as file:
-                            st.session_state['display_content'] = file.read()
-                            st.session_state['content_label'] = source
-                        with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
-                            st.write(st.session_state['display_content'])
-    st.session_state.messages.append({"role": "assistant", "content": result['response']})
 
+    response = f"Echo: {prompt}"
+    with st.chat_message("assistant"):
+        st.markdown(response)
+    st.session_state.messages.append({"role": "assistant", "content": response})
 
 with st.sidebar: 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     data_folder_path = os.path.join(script_dir, r'data\full_contract_txt')
     for clean_file in get_clean_files():
         button_name = clean_file.filepath.replace(data_folder_path + '\\', '')
-        st.button(button_name, key=button_name, on_click=show_contract_text, args=[clean_file])
-
-# Main container for displaying the contract file contents
-    if 'display_content' in st.session_state:
-        with st.container():
-            with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
-                st.write(st.session_state['display_content'])
+        st.button(button_name, key=button_name, on_click=show_contract_text_callback, args=[clean_file])
