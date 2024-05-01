@@ -16,6 +16,7 @@ def get_index(nodes, index_name):
         index = VectorStoreIndex(nodes, show_progress=True)
         index.storage_context.persist(persist_dir=path_to_vdb)
     else:
+        print("loading index", index_name)
         index = load_index_from_storage(
             StorageContext.from_defaults(persist_dir=path_to_vdb)
         )

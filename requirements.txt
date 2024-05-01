@@ -3,3 +3,4 @@ llama-index
 llama-index-experimental
 langchain
 streamlit
+chardet

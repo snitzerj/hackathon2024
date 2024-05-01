@@ -1,6 +1,7 @@
 import streamlit as st 
 from CleanFile import CleanFile
 import os
+from ai_agent_main import agent
 
 #begin = st.container()
 #begin.title("Team Goldmine Presents ContractBot")
@@ -49,10 +50,12 @@ if prompt := st.chat_input("Message ContractBot..."):
     
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    response = f"Echo: {prompt}"
+    result = agent.query(prompt)
     with st.chat_message("assistant"):
-        st.markdown(response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
+        print(f"LLM Query final result: {result}")
+        st.markdown(result)
+    st.session_state.messages.append({"role": "assistant", "content": result})
+
 
 with st.sidebar: 
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -62,7 +65,7 @@ with st.sidebar:
         st.button(button_name, key=button_name, on_click=show_contract_text, args=[clean_file])
 
 # Main container for displaying the contract file contents
-if 'display_content' in st.session_state:
-    with st.container():
-        with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
-            st.write(st.session_state['display_content'])
+# if 'display_content' in st.session_state:
+#     with st.container():
+#         with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
+#             st.write(st.session_state['display_content'])
