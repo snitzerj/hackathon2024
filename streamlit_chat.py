@@ -92,17 +92,17 @@ if prompt := st.chat_input("Message Goldmine..."):
     result = display_agent_thoughts(prompt)
     with st.chat_message("assistant"):
         print(f"LLM Query final result: {result}")
-        result = json.loads(result.response)
-        st.markdown(result['response'])
-        for source in result['sources']:
-            if source is not None:
-                with st.container():
-                    with open(os.path.join(r'data\full_contract_txt', source), 'r') as file:
-                        st.session_state['display_content'] = file.read()
-                        st.session_state['content_label'] = source
-                    with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
-                        st.write(st.session_state['display_content'])
-    st.session_state.messages.append({"role": "assistant", "content": result['response']})
+        # result = json.loads(result.response)
+        st.markdown(result)
+        # for source in result['sources']:
+        #     if source is not None:
+        #         with st.container():
+        #             with open(os.path.join(r'data\full_contract_txt', source), 'r') as file:
+        #                 st.session_state['display_content'] = file.read()
+        #                 st.session_state['content_label'] = source
+        #             with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
+        #                 st.write(st.session_state['display_content'])
+    st.session_state.messages.append({"role": "assistant", "content": result})
 
 
 with st.sidebar: 
