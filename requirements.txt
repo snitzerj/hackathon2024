@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 streamlit
 langchain   #LLM Library
 chromadb    # Vector Storage
@@ -6,11 +5,9 @@ pypdf       # Loading PDFs
 pytest      # Unit Testing  
 openai      # open ai python package
 tiktoken    # needed for open ai embeddings
-=======
 python-dotenv
 llama-index
 llama-index-experimental
 langchain
 streamlit
 chardet
->>>>>>> b838af87c65ff4d27b70a9e387bc1bcd2367ee10
