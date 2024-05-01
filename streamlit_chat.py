@@ -6,11 +6,6 @@ from ai_agent_main import agent
 #begin = st.container()
 #begin.title("Team Goldmine Presents ContractBot")
 
-@st.cache_resource
-def get_chroma_client():
-    return ChromaClient('chroma2')
-
-vector_client = get_chroma_client()
 @st.cache_data(hash_funcs={CleanFile: lambda f: f.file_contents})
 def get_clean_files():
     clean_files = []
