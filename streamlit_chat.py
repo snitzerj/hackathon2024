@@ -289,25 +289,31 @@ if prompt := st.chat_input("Message Goldmine..."):
             result = {'response': result, 'sources': []}
         
         st.markdown(result['response'])
-        if isinstance(result['sources'], str):
-            source = result['sources']
-            if source is not None or not source == 'contracts_tabular_data':
-                    with st.container():
-                        with open(os.path.join(r'data\full_contract_txt', source), 'r') as file:
-                            st.session_state['display_content'] = file.read()
-                            st.session_state['content_label'] = source
-                        with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
-                            st.write(st.session_state['display_content'])
-        else:
-            for source in result['sources']:
-                if source is not None or not source == 'contracts_tabular_data':
-                    with st.container():
-                        with open(os.path.join(r'data\full_contract_txt', source), 'r') as file:
-                            st.session_state['display_content'] = file.read()
-                            st.session_state['content_label'] = source
-                        with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
-                            st.write(st.session_state['display_content'])
-    st.session_state.messages.append({"role": "assistant", "content": result['response']})
+        #print(f'SOURCE: {result['sources']}')
+        try:
+            if isinstance(result['sources'], str):
+                source = result['sources']
+                if source is not None and not source == 'contracts_tabular_data':
+                        with st.container():
+                            with open(os.path.join(r'data\full_contract_txt', source), 'r') as file:
+                                st.session_state['display_content'] = file.read()
+                                st.session_state['content_label'] = source
+                            with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
+                                st.write(st.session_state['display_content'])
+            else:
+                for source in result['sources']:
+                    if source is not None and not 'contracts_tabular_data' in source:
+                        with st.container():
+                            with open(os.path.join(r'data\full_contract_txt', source), 'r') as file:
+                                st.session_state['display_content'] = file.read()
+                                st.session_state['content_label'] = source
+                            with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
+                                st.write(st.session_state['display_content'])
+        except:
+            pass
+        st.session_state.messages.append({"role": "assistant", "content": result['response']})
+        
+
 
 
 with st.sidebar: 
