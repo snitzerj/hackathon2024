@@ -25,7 +25,7 @@ tools = [
     pandas_query_engine
 ]
 
-llm = OpenAI(model="gpt-3.5-turbo-0613")
+llm = OpenAI(model="gpt-4")
 agent = ReActAgent.from_tools(tools, llm=llm, verbose=True, context=context)
 
 if __name__ == "__main__": 
