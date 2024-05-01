@@ -10,12 +10,13 @@ from llama_index.llms.openai import OpenAI
 from text_loader import text_vdb_engine
 from csv_loader import create_csv_query_engine
 from ChromaClient import ChromaClient
+from get_full_contract_txt import get_full_contract_text
 load_dotenv()
 
 vector_client = ChromaClient('chroma5')
 pandas_query_engine = create_csv_query_engine()
 rag_query_tool = FunctionTool.from_defaults(fn=vector_client.query, description="this queries a vector database to retrieve relevant contract text context. When you use this tool, always return the sources used from the output.")
-
+full_contract_content_tool = FunctionTool.from_defaults(fn=get_full_contract_text, description="this tool extracts the full content of a contract if a contract file name is given. This can help with summarization, comparison, and entity extraction tasks.")
 tools = [
     # QueryEngineTool(
     #     query_engine=text_vdb_engine,
@@ -25,7 +26,8 @@ tools = [
     #     ),
     # ),
     pandas_query_engine,
-    rag_query_tool
+    rag_query_tool,
+    full_contract_content_tool
 ]
 
 
