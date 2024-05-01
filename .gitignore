@@ -4,3 +4,4 @@ env/
 .env
 .vscode
 data
+data/full_contract_txt
