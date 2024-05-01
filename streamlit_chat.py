@@ -54,8 +54,7 @@ if prompt := st.chat_input("Message ContractBot..."):
     with st.chat_message("assistant"):
         print(f"LLM Query final result: {result}")
         st.markdown(result)
-    st.session_state.messages.append({"role": "assistant", "content": result['response']})
-    st.session_state.messages.append({"role": "assistant", "content": set(result['sources'])})
+    st.session_state.messages.append({"role": "assistant", "content": result})
 
 
 with st.sidebar: 
