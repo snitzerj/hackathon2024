@@ -7,19 +7,22 @@ from prompts import new_prompt, instruction_str, context
 from llama_index.core.tools import QueryEngineTool, ToolMetadata
 from llama_index.core.agent import ReActAgent
 from llama_index.llms.openai import OpenAI
-from pdf_data_loader import pdf_engine
+from text_loader import text_vdb_engine
+from csv_loader import create_csv_query_engine
 
 load_dotenv()
 
+pandas_query_engine = create_csv_query_engine()
 
 tools = [
     QueryEngineTool(
-        query_engine=pdf_engine,
+        query_engine=text_vdb_engine,
         metadata=ToolMetadata(
             name="contract_full_content_data",
-            description="this gives detailed information about contract text content",
+            description="this queries a vector database to retrieve relevant contract text context",
         ),
     ),
+    pandas_query_engine
 ]
 
 llm = OpenAI(model="gpt-3.5-turbo-0613")
