@@ -1,106 +1,268 @@
 import streamlit as st 
-from ChromaClient import ChromaClient
 from CleanFile import CleanFile
 import os
-import firebase_admin
-from firebase_admin import credentials, firestore
-from datetime import datetime
-
-@st.cache_resource
-def get_chroma_client():
-    return ChromaClient('chroma2')
-
-vector_client = get_chroma_client()
-
-try:
-    # Try to get the default app, if it already exists, this will not raise an error
-    firebase_app = firebase_admin.get_app()
-except ValueError:
-    # If it does not exist, initialize it
-    json_dir = os.path.dirname(os.path.abspath(__file__))
-    json_dir_path = os.path.join(json_dir, r'firestore-key.json')
-    cred = credentials.Certificate(f'{json_dir_path}')
-    firebase_app = firebase_admin.initialize_app(cred)
-
-db = firestore.client(app=firebase_app)
-
-# Function to get chat sessions
-def get_chat_sessions():
-    sessions = db.collection('chats').stream()
-    return {session.id: session.to_dict() for session in sessions}
-
-# # Function to add a message to Firestore
-# def add_message(session_id, message):
-#     doc_ref = db.collection('chats').document(session_id)
-#     doc_ref.update({'messages': firestore.ArrayUnion([message])})
-
-
-# def save_session_to_firestore(session_messages):
-#     sessions_collection = db.collection('sessions')
-#     sessions_collection.add({
-#         'messages': session_messages
-#     })
-
-# def load_sessions_from_firestore():
-#     sessions_collection = db.collection('sessions')
-#     sessions_docs = sessions_collection.stream()
-
-#     all_sessions = []
-#     for session in sessions_docs:
-#         all_sessions.append(session.to_dict()['messages'])
-#     return all_sessions
-
-def add_message(session_id, role, content, attachments=None):
-    message_data = {
-        'role': role,
-        'content': content,
-        'timestamp': firestore.SERVER_TIMESTAMP,
+import pandas as pd
+import streamlit as st
+#begin = st.container()
+#begin.title("Team Goldmine Presents ContractBot")
+########################################################################
+# st.markdown('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
+import streamlit as st
+from streamlit_navigation_bar import st_navbar
+#Navbar
+pages = [""]
+styles = {
+    "nav": {
+        "background-color": "#AF0808",
+    },
+    "div": {
+        "max-width": "50rem",
+    },
+    "span": {
+        "color": "white",
+        "border-radius": "20.5rem",
+        "padding": "20.4375rem 20.625rem",
+        "margin": "10.125rem",
+    },
+    "active": {
+        "background-color": "#AF0808",
     }
-    db.collection('sessions').document(session_id).collection('messages').add(message_data)
+}
 
-st.sidebar.title("Chat Sessions")
-all_sessions = get_chat_sessions()
-selected_session = st.sidebar.selectbox("Select a Session", list(all_sessions.keys()))
+page = st_navbar(pages, styles=styles)
+st.write(page)
 
-if st.sidebar.button("Start New Session"):
-    new_session_id = datetime.now().isoformat()
-    db.collection('sessions').document(new_session_id).set({"messages": []})
-    selected_session = new_session_id
 
-# Refresh button to update messages
-if st.sidebar.button("Refresh Messages"):
-    st.rerun()
+#color for background
 
-# Main chat interface
+import streamlit as st
+
+ms = st.session_state
+
+if "themes" not in ms: 
+    ms.themes = {
+        "current_theme": "light",
+        "refreshed": True,
+        
+        "light": {
+            "theme.base": "dark",
+            "theme.backgroundColor": "#ffeed6",
+            "theme.primaryColor": "black",
+            "theme.secondaryBackgroundColor": "#AF0808",
+            "theme.activeColor": "pink",   # remove
+            "theme.inputTextColor": "pink",  # remove
+            "theme.textColor": "white" #text for side
+        }
+    }
+
+def ApplyLightTheme():
+    light_theme = ms.themes["light"]
+    for vkey, vval in light_theme.items(): 
+        if vkey.startswith("theme"): 
+            st._config.set_option(vkey, vval)
+
+# Custom CSS to style active text and input text
+custom_css = f"""
+<style>
+.stText {{
+    color: {ms.themes['light']['theme.textColor']} !important;
+}}
+.stMarkdown p {{
+    color: {ms.themes['light']['theme.primaryColor']} !important;
+}}
+.stTextInput input[type="text"] {{
+    color: {ms.themes['light']['theme.inputTextColor']} !important;
+}}
+.stTextArea textarea {{
+    color: {ms.themes['light']['theme.inputTextColor']} !important;
+}}
+.stButton>div>span>div {{
+    color: {ms.themes['light']['theme.activeColor']} !important;
+}}
+</style>
+"""
+
+# Apply the custom CSS
+st.markdown(custom_css, unsafe_allow_html=True)
+
+ApplyLightTheme()
+
+
+import streamlit as st
+
+import base64
+
+# Read the SVG file
+with open("VG.svg", "rb") as f:
+    svg_bytes = f.read()
+
+# Encode the SVG file to Base64
+svg_base64_encoded = base64.b64encode(svg_bytes).decode("utf-8")
+
+st.sidebar.markdown(
+    f"""
+    <style>
+        /* Center-align the logo */
+        .sidebar .sidebar-content {{
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            margin-top: 2000px; 
+        }}
+
+        /* Center the image horizontally and vertically */
+        .sidebar img {{
+            margin: auto;
+      
+        }}
+    </style>
+    """
+    f"""
+    <div>
+        <img src="data:image/svg+xml;base64,{svg_base64_encoded}" width="100" alt="Logo"/>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+# st.sidebar.image( width=200)  
+
+# Define the custom theme
+# custom_theme = {
+#     "primaryColor": "yellow",
+#     "backgroundColor": "#ffffff",
+#     "secondaryBackgroundColor": "#5591f5",
+#     "textColor": "#000000",
+#     "font": "sans-serif"
+# }
+# page = st_navbar( styles=styles)
+# st.write(page)
+
+# # Custom CSS for light mode
+# light_mode_css = f"""
+# <style>
+# /* Add your custom CSS for light mode here */
+# body {{
+#     background-color: {custom_theme["backgroundColor"]};
+#     color: {custom_theme["textColor"]};
+# }}
+
+# /* Example: Change button color */
+# .stButton>button {{
+#     background-color: {custom_theme["primaryColor"]};
+#     color: white;
+# }}
+
+# /* Customize secondary background color */
+# .secondary-background {{
+#     background-color: {custom_theme["secondaryBackgroundColor"]};
+# }}
+
+# /* Customize primary color */
+# .primary-color {{
+#     color: {custom_theme["primaryColor"]};
+# }}
+
+# /* Customize text color */
+# .text-color {{
+#     color: {custom_theme["textColor"]};
+# }}
+# </style>
+# """
+
+# # Apply the custom CSS
+# st.markdown(light_mode_css, unsafe_allow_html=True)
+
+# Your Streamlit app code goes here
+
+
+# Your Streamlit app code goes here
+
+
+# def ChangeTheme():
+#   previous_theme = ms.themes["current_theme"]
+#   tdict = ms.themes["light"] if ms.themes["current_theme"] == "light" else ms.themes["dark"]
+#   for vkey, vval in tdict.items(): 
+#     if vkey.startswith("theme"): st._config.set_option(vkey, vval)
+
+#   ms.themes["refreshed"] = False
+#   if previous_theme == "dark": ms.themes["current_theme"] = "light"
+#   elif previous_theme == "light": ms.themes["current_theme"] = "dark"
+
+
+# btn_face = ms.themes["light"]["button_face"] if ms.themes["current_theme"] == "light" else ms.themes["dark"]["button_face"]
+# st.button(btn_face, on_click=ChangeTheme)
+
+# if ms.themes["refreshed"] == False:
+#   ms.themes["refreshed"] = True
+#   st.rerun()
+
+
+
+# st.write(page)
+
+
+
+# Define the HTML content for the logo and title
+logo_html = """
+<div style="display: flex; align-items: center;">
+    <img src="https://example.com/logo.png" alt="Logo" width="50" height="50">
+    <h1 style="color: white; margin: 0 0 0 10px;">My Streamlit App</h1>
+</div>
+"""
+
+
+
+
+######################################################################
+
+@st.cache_data(hash_funcs={CleanFile: lambda f: f.file_contents})
+def get_clean_files():
+    clean_files = []
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    data_folder_path = os.path.join(script_dir, r'data\full_contract_txt')
+    # Loop through all files in the folder
+
+    for filename in os.listdir(data_folder_path):
+        # Check if the current file is a regular file
+        if os.path.isfile(os.path.join(data_folder_path, filename)):
+            clean_file = CleanFile(os.path.join(data_folder_path, filename))
+            clean_files.append(clean_file)
+    return clean_files
+
+
+def show_contract_text_callback(clean_file):
+    response = clean_file.file_contents
+    with st.chat_message("assistant"):
+        st.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        
+
+
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Displaying messages from Firestore and their associated files
-messages = [msg.to_dict() for msg in db.collection('sessions').document(selected_session).collection('messages').stream()]
-for msg in messages:
-    with st.chat_message(msg['role']):
-        st.markdown(f"{msg['timestamp'].isoformat()}: {msg['content']}")
-        if msg.get('source_files'):
-            for source in msg['source_files']:
-                with st.expander(f"Source: {source}", expanded=False):
-                    with open(source, 'r') as file:
-                        st.write(file.read())
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-# User input and AI interaction
 if prompt := st.chat_input("Message ContractBot..."):
     st.chat_message("user").markdown(prompt)
-    result = vector_client.query(prompt)
-    source_files = result.get('sources', [])
-    add_message(selected_session, "user", prompt, source_files)
+    
+    st.session_state.messages.append({"role": "user", "content": prompt})
 
+    response = f"Echo: {prompt}"
     with st.chat_message("assistant"):
-        st.markdown(result['response'])
-        for source in source_files:
-            if source is not None:
-                with st.expander(f"Source: {source}", expanded=False):
-                    with open(source, 'r') as file:
-                        st.write(file.read())
-    add_message(selected_session, "assistant", result['response'], source_files)
+        st.markdown(response)
+    st.session_state.messages.append({"role": "assistant", "content": response})
 
-
+with st.sidebar: 
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    data_folder_path = os.path.join(script_dir, r'data\full_contract_txt')
+    for clean_file in get_clean_files():
+        button_name = clean_file.filepath.replace(data_folder_path + '\\', '')
+        st.button(button_name, key=button_name, on_click=show_contract_text_callback, args=[clean_file])
 
