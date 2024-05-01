@@ -23,7 +23,7 @@ class CustomStdout:
         print(f'Function called with: {s}', file=self.original_stdout)
         if not len(f'{s}') == 0:
             with st.chat_message("assistant"):
-                st.write(f'{s}', file=self.original_stdout)
+                st.write(f'{s}')
 
     def flush(self):
         pass
