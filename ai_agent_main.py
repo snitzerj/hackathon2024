@@ -28,6 +28,7 @@ tools = [
 llm = OpenAI(model="gpt-3.5-turbo-0613")
 agent = ReActAgent.from_tools(tools, llm=llm, verbose=True, context=context)
 
-while (prompt := input("Enter a prompt (q to quit): ")) != "q":
-    result = agent.query(prompt)
-    print(result)
+if __name__ == "__main__": 
+    while (prompt := input("Enter a prompt (q to quit): ")) != "q":
+        result = agent.query(prompt)
+        print(result)

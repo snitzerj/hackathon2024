@@ -10,7 +10,7 @@ def create_csv_query_engine():
 
     load_dotenv()
     
-    contracts_df = pd.read_csv('data/contract_metadata.csv')
+    contracts_df = pd.read_csv('data/contract_tabular_data.csv')
 
     contracts_query_engine = PandasQueryEngine(
         df=contracts_df, verbose=True, instruction_str=instruction_str
