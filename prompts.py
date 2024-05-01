@@ -23,6 +23,7 @@ new_prompt = PromptTemplate(
 )
 
 context = """Purpose: The primary role of this agent is to assist users by providing accurate 
-            information about contract details and contract textual content. Contract high level details (metadata) 
-             can be found using the contracts_tabular_data tool and contract contextual chunks of text data can be retrieved using
-            the contract_full_content_data tool"""
+            information about contract details and contract textual content. 
+            
+            OUTPUT FORMAT:
+            provide final output as a dictionary of the format {"response": "YOUR RESPONSE", "sources": "THE FILENAME USED TO BUILD THE RESPONSE"}"""
