@@ -62,10 +62,14 @@ st.sidebar.title("Chat Sessions")
 all_sessions = get_chat_sessions()
 selected_session = st.sidebar.selectbox("Select a Session", list(all_sessions.keys()))
 
-if st.button("Start New Session"):
+if st.sidebar.button("Start New Session"):
     new_session_id = datetime.now().isoformat()
     db.collection('sessions').document(new_session_id).set({"messages": []})
     selected_session = new_session_id
+
+# Refresh button to update messages
+if st.sidebar.button("Refresh Messages"):
+    st.rerun()
 
 # Main chat interface
 if "messages" not in st.session_state:
@@ -98,7 +102,5 @@ if prompt := st.chat_input("Message ContractBot..."):
                         st.write(file.read())
     add_message(selected_session, "assistant", result['response'], source_files)
 
-# Refresh button to update messages
-if st.button("Refresh Messages"):
-    st.rerun()
+
 
