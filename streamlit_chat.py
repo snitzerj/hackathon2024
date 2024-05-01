@@ -89,27 +89,11 @@ if prompt := st.chat_input("Message Goldmine..."):
     st.chat_message("user").markdown(prompt)
     
     st.session_state.messages.append({"role": "user", "content": prompt})
-    if 1 == 0:
-        result = vector_client.query(prompt)
-        with st.chat_message("assistant"):
-            st.markdown(result['response'])
-            st.markdown(set(result['sources']))
-            for source in result['sources']:
-                if source is not None:
-                    with st.container():
-                        with open(source, 'r') as file:
-                            st.session_state['display_content'] = file.read()
-                            st.session_state['content_label'] = source
-                        with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
-                            st.write(st.session_state['display_content'])
-        st.session_state.messages.append({"role": "assistant", "content": result['response']})
-        st.session_state.messages.append({"role": "assistant", "content": set(result['sources'])})
     result = display_agent_thoughts(prompt)
     with st.chat_message("assistant"):
         print(f"LLM Query final result: {result}")
         result = json.loads(result.response)
         st.markdown(result['response'])
-        st.markdown(set(result['sources']))
         for source in result['sources']:
             if source is not None:
                 with st.container():
@@ -118,10 +102,7 @@ if prompt := st.chat_input("Message Goldmine..."):
                         st.session_state['content_label'] = source
                     with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
                         st.write(st.session_state['display_content'])
-        
-            
-
-    st.session_state.messages.append({"role": "assistant", "content": result})
+    st.session_state.messages.append({"role": "assistant", "content": result['response']})
 
 
 with st.sidebar: 
