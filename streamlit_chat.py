@@ -9,6 +9,8 @@ from io import StringIO
 from streamlit_navigation_bar import st_navbar
 import base64
 import contextlib
+import numpy as np
+from PIL import Image
 
 
 class CustomStdout:
@@ -40,8 +42,11 @@ def stdout_redirector():
     finally:
         sys.stdout = original_stdout
 
+# Define navigation pages
 pages = [""]
-styles = {
+
+# Define CSS styles for navigation bar
+styles1 = {
     "nav": {
         "background-color": "#AF0808",
     },
@@ -49,9 +54,9 @@ styles = {
         "max-width": "50rem",
     },
     "span": {
-        "color": "white",
-        "border-radius": "20.5rem",
-        "padding": "20.4375rem 20.625rem",
+        "color": "black",
+        "border-radius": "120.5rem",
+        "padding": "120.4375rem 20.625rem",
         "margin": "10.125rem",
     },
     "active": {
@@ -59,8 +64,51 @@ styles = {
     }
 }
 
-page = st_navbar(pages, styles=styles)
-st.write(page)
+# Read the SVG file
+with open("VG.svg", "rb") as f:
+    svg_bytes = f.read()
+
+# Encode the SVG file to Base64
+svg_base64_encoded = base64.b64encode(svg_bytes).decode("utf-8")
+
+st.sidebar.markdown(
+    f"""
+    <style>
+        /* Center-align the logo */
+        .sidebar .sidebar-content {{
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            margin-top: 2000px; 
+        }}
+
+        /* Center the image horizontally and vertically */
+        .sidebar img {{
+            margin: auto;
+      
+        }}
+    </style>
+    """
+    f"""
+    <div>
+        <img src="data:image/svg+xml;base64,{svg_base64_encoded}" width="250" alt="Logo"/>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# Render navigation bar
+page = st_navbar(pages, styles=styles1)
+
+# Apply selected page logic
+if page == "":
+    img_file_buffer = st.sidebar.file_uploader('Upload a PNG image', type='png')
+    if img_file_buffer is not None:
+        image = Image.open(img_file_buffer)
+        img_array = np.array(image)
+        st.sidebar.image(image,  use_column_width=True)
+        
+        
 
 
 #color for background
@@ -131,38 +179,7 @@ st.markdown(custom_css, unsafe_allow_html=True)
 
 ApplyLightTheme()
 
-# Read the SVG file
-with open("VG.svg", "rb") as f:
-    svg_bytes = f.read()
 
-# Encode the SVG file to Base64
-svg_base64_encoded = base64.b64encode(svg_bytes).decode("utf-8")
-
-st.sidebar.markdown(
-    f"""
-    <style>
-        /* Center-align the logo */
-        .sidebar .sidebar-content {{
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            margin-top: 2000px; 
-        }}
-
-        /* Center the image horizontally and vertically */
-        .sidebar img {{
-            margin: auto;
-      
-        }}
-    </style>
-    """
-    f"""
-    <div>
-        <img src="data:image/svg+xml;base64,{svg_base64_encoded}" width="250" alt="Logo"/>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
 
 # Define the HTML content for the logo and title
 logo_html = """
