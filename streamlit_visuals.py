@@ -87,6 +87,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+div[data-testid="stExpander"] > div:first-child {
+    background-color: #f0f0f0;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # Apply the custom CSS
 st.markdown(custom_css, unsafe_allow_html=True)
 
