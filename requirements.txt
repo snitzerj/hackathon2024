@@ -4,3 +4,4 @@ llama-index-experimental
 langchain
 streamlit
 chardet
+streamlit_navigation_bar
