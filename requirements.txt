@@ -1,1 +1,5 @@
+python-dotenv
+llama-index
+llama-index-experimental
+langchain
 streamlit

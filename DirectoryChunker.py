@@ -1,6 +1,4 @@
 import re
-from functools import lru_cache
-from OpenAIClient import OpenAIClient
 from langchain_community.document_loaders import TextLoader, DirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -47,7 +45,3 @@ class DirectoryChunker:
     )
         return text_splitter.create_documents(text_list)
     
-
-
-
-

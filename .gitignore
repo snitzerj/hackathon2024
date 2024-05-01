@@ -1,1 +1,6 @@
+__pycache__
+contract_pdf_vector_data
+env/
 .env
+.vscode
+data
