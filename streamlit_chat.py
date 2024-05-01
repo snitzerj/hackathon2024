@@ -3,13 +3,43 @@ from ChromaClient import ChromaClient
 from CleanFile import CleanFile
 import os
 from ai_agent_main import agent
+import json
+import sys
+from io import StringIO
+import threading
+
+def capture_output(func):
+    def wrapper(*args, **kwargs):
+        # Redirect sys.stdout to a StringIO object
+        original_stdout = sys.stdout
+        sys.stdout = StringIO()
+        
+        try:
+            # Call the original function
+            result = func(*args, **kwargs)
+            
+            # Get the output from StringIO and store it in a variable
+            captured_output = sys.stdout.getvalue()
+            with st.expander("AI Agent Observations"):
+                st.write(captured_output)
+            
+            # Restore sys.stdout
+            sys.stdout = original_stdout
+            
+            return result
+        except Exception as e:
+            # Restore sys.stdout even if an exception occurs
+            sys.stdout = original_stdout
+            raise e
+    
+    return wrapper
 
 #begin = st.container()
 #begin.title("Team Goldmine Presents ContractBot")
 
 @st.cache_resource
 def get_chroma_client():
-    return ChromaClient('chroma2')
+    return ChromaClient('chroma5')
 
 vector_client = get_chroma_client()
 @st.cache_data(hash_funcs={CleanFile: lambda f: f.file_contents})
@@ -43,6 +73,10 @@ def show_contract_text(file):
 def read_file(filepath):
     with open(filepath, 'r') as file:
         return file.read()
+    
+@capture_output
+def display_agent_thoughts(prompt):
+    return agent.query(prompt)
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -51,7 +85,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Message ContractBot..."):
+if prompt := st.chat_input("Message Goldmine..."):
     st.chat_message("user").markdown(prompt)
     
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -70,10 +104,23 @@ if prompt := st.chat_input("Message ContractBot..."):
                             st.write(st.session_state['display_content'])
         st.session_state.messages.append({"role": "assistant", "content": result['response']})
         st.session_state.messages.append({"role": "assistant", "content": set(result['sources'])})
-    result = agent.query(prompt)
+    result = display_agent_thoughts(prompt)
     with st.chat_message("assistant"):
         print(f"LLM Query final result: {result}")
-        st.markdown(result)
+        result = json.loads(result.response)
+        st.markdown(result['response'])
+        st.markdown(set(result['sources']))
+        for source in result['sources']:
+            if source is not None:
+                with st.container():
+                    with open(os.path.join(r'data\full_contract_txt', source), 'r') as file:
+                        st.session_state['display_content'] = file.read()
+                        st.session_state['content_label'] = source
+                    with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
+                        st.write(st.session_state['display_content'])
+        
+            
+
     st.session_state.messages.append({"role": "assistant", "content": result})
 
 

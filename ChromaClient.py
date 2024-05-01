@@ -43,6 +43,7 @@ class ChromaClient(object):
         return self.db._collection.get(include=['embeddings'])
         
     def query(self, query_text: str):
+        """QUERY CHROMA FOR RETRIVAL AUGMENTED GENERATION. RETURNS SIMILARITY SEARCH AND FILENAME."""
         PROMPT_TEMPLATE = """
 Answer the question based only on the following context:
 
