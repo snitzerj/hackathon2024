@@ -1,6 +1,4 @@
 import re
-from functools import lru_cache
-from OpenAIClient import OpenAIClient
 from langchain_community.document_loaders import TextLoader, DirectoryLoader
 from langchain.docstore.document import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter

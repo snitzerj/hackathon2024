@@ -2,6 +2,7 @@ import streamlit as st
 from ChromaClient import ChromaClient
 from CleanFile import CleanFile
 import os
+from ai_agent_main import agent
 
 #begin = st.container()
 #begin.title("Team Goldmine Presents ContractBot")
@@ -54,21 +55,26 @@ if prompt := st.chat_input("Message ContractBot..."):
     st.chat_message("user").markdown(prompt)
     
     st.session_state.messages.append({"role": "user", "content": prompt})
-
-    result = vector_client.query(prompt)
+    if 1 == 0:
+        result = vector_client.query(prompt)
+        with st.chat_message("assistant"):
+            st.markdown(result['response'])
+            st.markdown(set(result['sources']))
+            for source in result['sources']:
+                if source is not None:
+                    with st.container():
+                        with open(source, 'r') as file:
+                            st.session_state['display_content'] = file.read()
+                            st.session_state['content_label'] = source
+                        with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
+                            st.write(st.session_state['display_content'])
+        st.session_state.messages.append({"role": "assistant", "content": result['response']})
+        st.session_state.messages.append({"role": "assistant", "content": set(result['sources'])})
+    result = agent.query(prompt)
     with st.chat_message("assistant"):
-        st.markdown(result['response'])
-        st.markdown(set(result['sources']))
-        for source in result['sources']:
-            if source is not None:
-                 with st.container():
-                    with open(source, 'r') as file:
-                        st.session_state['display_content'] = file.read()
-                        st.session_state['content_label'] = source
-                    with st.expander(f"{st.session_state['content_label']}\n", expanded=False):
-                        st.write(st.session_state['display_content'])
-    st.session_state.messages.append({"role": "assistant", "content": result['response']})
-    st.session_state.messages.append({"role": "assistant", "content": set(result['sources'])})
+        print(f"LLM Query final result: {result}")
+        st.markdown(result)
+    st.session_state.messages.append({"role": "assistant", "content": result})
 
 
 with st.sidebar: 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 chroma
 __pycache__
 Contract_Data
@@ -6,3 +7,12 @@ chroma3
 chroma4
 chroma5
 .env
+=======
+__pycache__
+contract_pdf_vector_data
+env/
+.env
+.vscode
+data
+data/full_contract_txt
+>>>>>>> b838af87c65ff4d27b70a9e387bc1bcd2367ee10
